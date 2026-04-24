@@ -98,6 +98,7 @@ export function useSession(settings: Settings) {
   }
 
   async function transcribeChunk(blob: Blob, startMs: number, endMs: number) {
+    if (!settings.groqApiKey) return;
     const formData = new FormData();
     formData.append('audio', blob);
     formData.append('apiKey', settings.groqApiKey);
@@ -115,11 +116,6 @@ export function useSession(settings: Settings) {
 
       if (!res.ok || data.error) {
         const message = data.error ?? `HTTP ${res.status}`;
-        console.error('[transcribe]', {
-          status: res.status,
-          statusText: res.statusText,
-          body: data,
-        });
         setError(`Transcription failed (${res.status}): ${message}`);
         return;
       }
@@ -148,6 +144,10 @@ export function useSession(settings: Settings) {
   const triggerSuggestions = useCallback(async () => {
     const currentState = stateRef.current;
     if (currentState.pendingSuggestions) return;
+    if (!settings.groqApiKey) {
+      setError('Please add your Groq API key in Settings first');
+      return;
+    }
 
     if (audioIsRecording && typeof flushCurrentChunk === 'function') {
       await flushCurrentChunk();
@@ -223,6 +223,10 @@ export function useSession(settings: Settings) {
 
   async function sendChatMessage(content: string, linkedSuggestionId?: string, suggestionContext?: string) {
     if (!content.trim() || state.isChatStreaming) return;
+    if (!settings.groqApiKey) {
+      setError('Please add your Groq API key in Settings first');
+      return;
+    }
 
     const userMessage: ChatMessage = {
       id: crypto.randomUUID(),

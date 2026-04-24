@@ -77,7 +77,6 @@ export async function POST(request: NextRequest) {
     });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Chat failed';
-    console.error('[chat]', message);
     return new Response(JSON.stringify({ error: message }), { status: 500 });
   }
 }

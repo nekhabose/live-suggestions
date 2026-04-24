@@ -50,7 +50,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ suggestions });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Suggestion generation failed';
-    console.error('[suggestions]', message);
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

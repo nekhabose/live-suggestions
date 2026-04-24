@@ -35,13 +35,16 @@ export default function Home() {
   return (
     <div className="flex flex-col h-screen">
       {/* Header */}
-      <header className="flex items-center justify-between px-5 py-3 bg-white border-b border-gray-200 shrink-0">
+      <header className="relative z-10 flex items-center justify-between px-5 py-3 bg-white border-b border-gray-200 shrink-0">
         <div className="flex items-center gap-2">
           <span className="text-lg font-bold text-gray-900">Live Suggestions</span>
           {!settings.groqApiKey && (
-            <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium">
+            <button
+              onClick={() => setShowSettings(true)}
+              className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium hover:bg-amber-200 transition-colors"
+            >
               No API key — click Settings
-            </span>
+            </button>
           )}
         </div>
         <div className="flex items-center gap-2">

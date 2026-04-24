@@ -18,14 +18,15 @@ const MIME_TYPE_TO_EXTENSION: Record<string, string> = {
 };
 
 function buildUploadFile(audioBlob: Blob): File {
-  if (audioBlob instanceof File && audioBlob.name) {
-    return audioBlob;
-  }
+  const rawMimeType = audioBlob.type || 'audio/webm';
+  const mimeType = rawMimeType.split(';')[0].trim() || 'audio/webm';
+  const extension = MIME_TYPE_TO_EXTENSION[rawMimeType] ?? MIME_TYPE_TO_EXTENSION[mimeType] ?? 'webm';
+  const fileName =
+    audioBlob instanceof File && audioBlob.name && audioBlob.name.includes('.')
+      ? audioBlob.name.replace(/\.[^.]+$/, `.${extension}`)
+      : `audio.${extension}`;
 
-  const mimeType = audioBlob.type || 'audio/webm';
-  const extension = MIME_TYPE_TO_EXTENSION[mimeType] ?? 'webm';
-
-  return new File([audioBlob], `audio.${extension}`, { type: mimeType });
+  return new File([audioBlob], fileName, { type: mimeType });
 }
 
 function getErrorDetails(err: unknown): { status: number; message: string } {
@@ -58,10 +59,15 @@ export async function POST(request: NextRequest) {
     const apiKey = formData.get('apiKey') as string | null;
 
     if (!apiKey) {
-      return NextResponse.json({ error: 'Missing API key' }, { status: 400 });
+      return NextResponse.json({ text: '' });
     }
     if (!audioBlob) {
       return NextResponse.json({ error: 'Missing audio data' }, { status: 400 });
+    }
+    // Groq rejects audio shorter than 0.01s — chunks under 8 KB are typically
+    // just WebM container headers with no real audio frames
+    if (audioBlob.size < 8000) {
+      return NextResponse.json({ text: '' });
     }
 
     const start = Date.now();
@@ -72,6 +78,7 @@ export async function POST(request: NextRequest) {
       file,
       model: DEFAULTS.GROQ_TRANSCRIPTION_MODEL,
       response_format: 'json',
+      language: 'en',
     });
 
     return NextResponse.json({
