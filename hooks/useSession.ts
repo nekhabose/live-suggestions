@@ -88,17 +88,11 @@ export function useSession(settings: Settings) {
     errorTimerRef.current = setTimeout(() => dispatch({ type: 'CLEAR_ERROR' }), 8000);
   }
 
-  function getFullTranscript(chunks: TranscriptChunk[]): string {
-    return chunks.map((c) => c.text).join(' ');
-  }
-
   function getRecentTranscript(chunks: TranscriptChunk[], maxChars: number): string {
-    const full = getFullTranscript(chunks);
-    return full.slice(-maxChars);
+    return chunks.map((c) => c.text).join(' ').slice(-maxChars);
   }
 
   async function transcribeChunk(blob: Blob, startMs: number, endMs: number) {
-    if (!settings.groqApiKey) return;
     const formData = new FormData();
     formData.append('audio', blob);
     formData.append('apiKey', settings.groqApiKey);
@@ -115,8 +109,7 @@ export function useSession(settings: Settings) {
       }
 
       if (!res.ok || data.error) {
-        const message = data.error ?? `HTTP ${res.status}`;
-        setError(`Transcription failed (${res.status}): ${message}`);
+        setError(`Transcription failed (${res.status}): ${data.error ?? `HTTP ${res.status}`}`);
         return;
       }
       if (data.text?.trim()) {
@@ -144,12 +137,8 @@ export function useSession(settings: Settings) {
   const triggerSuggestions = useCallback(async () => {
     const currentState = stateRef.current;
     if (currentState.pendingSuggestions) return;
-    if (!settings.groqApiKey) {
-      setError('Please add your Groq API key in Settings first');
-      return;
-    }
 
-    if (audioIsRecording && typeof flushCurrentChunk === 'function') {
+    if (audioIsRecording) {
       await flushCurrentChunk();
     }
 
@@ -192,7 +181,7 @@ export function useSession(settings: Settings) {
     } finally {
       dispatch({ type: 'SET_PENDING_SUGGESTIONS', value: false });
     }
-  }, [settings, audioIsRecording, flushCurrentChunk]);
+  }, [settings.groqApiKey, settings.suggestionContextChars, settings.suggestionPrompt, audioIsRecording, flushCurrentChunk]);
 
   triggerSuggestionsRef.current = triggerSuggestions;
 
@@ -204,8 +193,7 @@ export function useSession(settings: Settings) {
     dispatch({ type: 'SET_RECORDING', value: true, startedAt: new Date().toISOString() });
     audioStart();
 
-    // Auto-trigger suggestions every 30s while recording.
-    // Uses ref so the interval always calls the latest version of triggerSuggestions
+    // Uses ref so the interval always calls the latest triggerSuggestions
     // even if settings change while recording.
     suggestionIntervalRef.current = setInterval(() => {
       triggerSuggestionsRef.current();
@@ -249,9 +237,7 @@ export function useSession(settings: Settings) {
     const currentState = stateRef.current;
     const transcriptContext = getRecentTranscript(
       currentState.transcriptChunks,
-      linkedSuggestionId
-        ? settings.expandedAnswerContextChars
-        : settings.chatContextChars
+      linkedSuggestionId ? settings.expandedAnswerContextChars : settings.chatContextChars
     );
 
     const messages = [

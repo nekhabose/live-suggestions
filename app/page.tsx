@@ -8,7 +8,6 @@ import SettingsModal from '@/components/SettingsModal';
 import StatusBar from '@/components/StatusBar';
 import { useSession } from '@/hooks/useSession';
 import { useSettings } from '@/hooks/useSettings';
-import type { Suggestion } from '@/types';
 
 export default function Home() {
   const { settings, updateSettings, DEFAULT_SETTINGS } = useSettings();
@@ -27,10 +26,6 @@ export default function Home() {
   } = useSession(settings);
 
   const hasTranscript = state.transcriptChunks.length > 0;
-
-  function handleSuggestionClick(suggestion: Suggestion) {
-    clickSuggestion(suggestion);
-  }
 
   return (
     <div className="flex flex-col h-screen">
@@ -84,7 +79,7 @@ export default function Home() {
             pendingSuggestions={state.pendingSuggestions}
             hasTranscript={hasTranscript}
             onRefresh={triggerSuggestions}
-            onSuggestionClick={handleSuggestionClick}
+            onSuggestionClick={clickSuggestion}
           />
         </div>
 

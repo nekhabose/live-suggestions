@@ -3,11 +3,10 @@
 import { useState, useRef, useCallback } from 'react';
 
 const MIME_TYPES = [
-  'audio/webm',
-  'audio/mp4',
-  'audio/ogg',
   'audio/webm;codecs=opus',
+  'audio/webm',
   'audio/ogg;codecs=opus',
+  'audio/mp4',
 ];
 
 function getSupportedMimeType(): string {

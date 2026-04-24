@@ -58,9 +58,7 @@ export async function POST(request: NextRequest) {
     const audioBlob = formData.get('audio') as Blob | null;
     const apiKey = formData.get('apiKey') as string | null;
 
-    if (!apiKey) {
-      return NextResponse.json({ text: '' });
-    }
+    if (!apiKey) return NextResponse.json({ text: '' });
     if (!audioBlob) {
       return NextResponse.json({ error: 'Missing audio data' }, { status: 400 });
     }

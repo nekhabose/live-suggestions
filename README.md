@@ -83,6 +83,6 @@ npm run build    # Verify no build errors first
 vercel deploy    # Or: netlify deploy --prod, railway up, etc.
 ```
 
-No environment variables required — users supply their own Groq API key through the Settings UI.
+No environment variables needed — users paste their own Groq API key in the Settings UI.
 
 **Live URL**: _(add your deployed URL here before submitting)_

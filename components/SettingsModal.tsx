@@ -18,7 +18,10 @@ export default function SettingsModal({ settings, defaultSettings, onSave, onClo
   function handleSave() {
     onSave(form);
     setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+    setTimeout(() => {
+      setSaved(false);
+      onClose();
+    }, 800);
   }
 
   function resetField(field: keyof Settings) {
@@ -39,7 +42,9 @@ export default function SettingsModal({ settings, defaultSettings, onSave, onClo
             <label className="block text-sm font-medium text-gray-700 mb-1">Groq API Key</label>
             <p className="text-xs text-gray-400 mb-2">
               Get your key at{' '}
-              <span className="font-mono text-gray-500">console.groq.com</span>. Stored locally in your browser only.
+              <a href="https://console.groq.com" target="_blank" rel="noopener noreferrer" className="underline text-blue-500">
+                console.groq.com
+              </a>. Stored locally in your browser only.
             </p>
             <div className="flex gap-2">
               <input
