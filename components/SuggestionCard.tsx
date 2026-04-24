@@ -3,6 +3,12 @@
 import type { Suggestion, SuggestionType } from '@/types';
 
 const TYPE_CONFIG: Record<SuggestionType, { label: string; border: string; badge: string; badgeText: string }> = {
+  ANSWER_TO_QUESTION: {
+    label: 'Answer',
+    border: 'border-teal-400',
+    badge: 'bg-teal-100 text-teal-700',
+    badgeText: '↩ Answer',
+  },
   QUESTION_TO_ASK: {
     label: 'Question to Ask',
     border: 'border-blue-400',

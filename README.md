@@ -2,7 +2,7 @@
 
 Real-time AI suggestions during live conversations. Captures mic audio, transcribes it every 30 seconds, and surfaces three context-aware suggestions alongside a streaming chat panel.
 
-**Live URL**: _(add deployed URL here before submitting)_
+**Live URL**: https://live-suggestions-weld.vercel.app/
 
 ---
 
@@ -26,8 +26,8 @@ No environment variables. No database. No account required.
 ### Build & deploy
 
 ```bash
-npm run build          # type-check + production bundle
-vercel deploy          # or: netlify deploy --prod, railway up, etc.
+npm run build          
+vercel deploy          
 ```
 
 No server-side secrets — the Groq key is supplied by the user at runtime and never stored server-side.

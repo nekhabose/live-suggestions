@@ -5,7 +5,7 @@ import type { SuggestionType } from '@/types';
 
 export const runtime = 'nodejs';
 
-const VALID_TYPES: SuggestionType[] = ['QUESTION_TO_ASK', 'TALKING_POINT', 'FACT_CHECK', 'CLARIFICATION'];
+const VALID_TYPES: SuggestionType[] = ['QUESTION_TO_ASK', 'TALKING_POINT', 'FACT_CHECK', 'CLARIFICATION', 'ANSWER_TO_QUESTION'];
 
 export async function POST(request: NextRequest) {
   try {
